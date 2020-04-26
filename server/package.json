@@ -1,0 +1,28 @@
+{
+  "name": "remoteshutdown-server",
+  "version": "1.0.0",
+  "description": "This is the a rest api server for remote shutdown client",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benf3632/remoteShutdown-react-express.git"
+  },
+  "keywords": [
+    "node",
+    "reactnative",
+    "express"
+  ],
+  "author": "benf3632",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/benf3632/remoteShutdown-react-express/issues"
+  },
+  "homepage": "https://github.com/benf3632/remoteShutdown-react-express#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
