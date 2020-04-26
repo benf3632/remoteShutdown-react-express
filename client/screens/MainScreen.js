@@ -4,6 +4,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 const MainScreen = props => {
 	const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+	const { selectedIp } = props.route.params;
 
 	const showTimePicker = () => {
 		setDatePickerVisibility(true);
