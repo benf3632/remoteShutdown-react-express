@@ -1,19 +1,22 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var os = require('os');
 var app = express();
 
+var jsonParser = bodyParser.json();
+
 app.listen(3000, () => {
 	console.log('Server running on port 3000');
-});
-
-app.get('/url', (req, res, next) => {
-	res.json(['Tony', 'Lisa', 'Michael', 'Ginger', 'Food']);
 });
 
 app.get('/host', (req, res, next) => {
 	const hostname = os.hostname();
 	const ip = getIp();
 	res.json({ hostname, ip });
+});
+
+app.post('/execute', jsonParser, (req, res) => {
+	res.send('Worked hell yeash, ' + JSON.stringify(req.body));
 });
 
 const getIp = () => {
