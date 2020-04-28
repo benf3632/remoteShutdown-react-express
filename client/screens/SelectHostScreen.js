@@ -93,7 +93,7 @@ const SelectHostScreen = props => {
 					<Text>Did not found any hosts that running the server...</Text>
 					<Button
 						title='Try Entering Ip Manualy'
-						onPress={() => props.navigation.navigate('Main')}
+						onPress={selectHostHandler('')}
 					/>
 				</View>
 			</ScrollView>
