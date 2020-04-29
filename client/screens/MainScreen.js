@@ -13,6 +13,7 @@ import RadioForm from 'react-native-simple-radio-button';
 import Toast from 'react-native-easy-toast';
 
 import Card from '../components/Card';
+import Colors from '../constants/Color';
 
 const radio_props = [
   { label: 'Shutdown', value: 0 },
@@ -105,12 +106,12 @@ const MainScreen = props => {
           radio_props={radio_props}
           initial={0}
           onPress={val => setMode(val)}
-          buttonColor='#dd3b8a'
-          selectedButtonColor='#dd3b8a'
+          buttonColor={Colors.accent}
+          selectedButtonColor={Colors.accent}
         />
         <Button
           title={started ? 'Stop Timer' : 'Start Timer'}
-          color={'#5119a0'}
+          color={Colors.primary}
           onPress={started ? stopTimerHandler : startTimerHandler}
         />
       </Card>

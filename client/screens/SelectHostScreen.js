@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import Card from '../components/Card';
 import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
+import Color from '../constants/Color';
 
 const timeout = (ms, promise) => {
   return new Promise((resolve, reject) => {
@@ -87,7 +88,7 @@ const SelectHostScreen = props => {
         contentContainerStyle={styles.centered}
         refreshControl={
           <RefreshControl
-            colors='#9519a0'
+            colors={[Color.accent]}
             refreshing={isRefreshing}
             onRefresh={detectHosts}
           />
