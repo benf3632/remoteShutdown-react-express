@@ -69,13 +69,25 @@ const getIp = () => {
 };
 
 const shutdown = () => {
-  execSync(`echo "${password}" | sudo -S shutdown -h now`);
+  if (process.platform === 'win32') {
+    execSync('shutdown \\s');
+  } else {
+    execSync(`echo "${password}" | sudo -S shutdown -h now`);
+  }
 };
 
 const restart = () => {
-  execSync(`echo "${password}" | sudo -S shutdown -r now`);
+  if (process.platform === 'win32') {
+    execSync('shutdown \\r');
+  } else {
+    execSync(`echo "${password}" | sudo -S shutdown -r now`);
+  }
 };
 
 const sleep = () => {
-  execSync(`echo "${password}" | sudo -S shutdown -s now`);
+  if (process.platform === 'win32') {
+    execSync('rundll32.exe powrprof.dll,SetSuspendState 0,1,0');
+  } else {
+    execSync(`echo "${password}" | sudo -S shutdown -s now`);
+  }
 };
