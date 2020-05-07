@@ -70,7 +70,7 @@ const getIp = () => {
 
 const shutdown = () => {
   if (process.platform === 'win32') {
-    execSync('shutdown \\s');
+    execSync('shutdown /s');
   } else {
     execSync(`echo "${password}" | sudo -S shutdown -h now`);
   }
@@ -78,7 +78,7 @@ const shutdown = () => {
 
 const restart = () => {
   if (process.platform === 'win32') {
-    execSync('shutdown \\r');
+    execSync('shutdown /r');
   } else {
     execSync(`echo "${password}" | sudo -S shutdown -r now`);
   }
