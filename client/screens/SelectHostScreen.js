@@ -7,12 +7,15 @@ import {
   FlatList,
   Button,
   RefreshControl,
-  TouchableOpacity,
   ScrollView,
 } from 'react-native';
 import Card from '../components/Card';
+import NetInfo, { NetInfoStateType } from "@react-native-community/netinfo";
 import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import Color from '../constants/Color';
+import { State } from 'react-native-gesture-handler';
+import { interpolate, sub } from 'react-native-reanimated';
+
 
 const timeout = (ms, promise) => {
   return new Promise((resolve, reject) => {
@@ -23,19 +26,20 @@ const timeout = (ms, promise) => {
   });
 };
 
-const getHosts = async () => {
-  let hosts = [];
-  for (let i = 0; i < 256; i++) {
-    try {
-      const response = await timeout(
-        25,
-        fetch(`http://192.168.1.${i}:3000/host`)
-      );
-      const host = await response.json();
-      hosts = hosts.concat(host);
-    } catch (err) {}
-  }
-  return hosts;
+
+const getNetwrokId = (ipAddress, subnet) => {
+  let ipAddressArray = ipAddress.split('.');
+  let subnetArray = subnet.split('.');
+  ipAddressArray = ipAddressArray.map(element => parseInt(element));
+  subnetArray = subnetArray.map(element => parseInt(element));
+  console.log(ipAddressArray);
+  console.log(subnetArray);
+  let networkIdArray = [];
+  ipAddressArray.forEach((element, index) => {
+    networkIdArray.push(element & subnetArray[index]);
+  });
+  networkIdArray = networkIdArray.map(element => element.toString());
+  return networkIdArray.slice(0, 3).join('.');
 };
 
 const SelectHostScreen = props => {
@@ -43,29 +47,46 @@ const SelectHostScreen = props => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [hosts, setHosts] = useState([]);
 
+  const getHosts = async () => {
+    let networkState = await NetInfo.fetch();
+    let networkId = '192.168.1.';
+    if (networkState.type === NetInfoStateType.wifi) {
+      networkId = getNetwrokId(networkState.details.ipAddress, networkState.details.subnet);
+      //networkId = getNetwrokId(networkState.details.ipAddress, '255.255.255.0');
+      console.log(networkId);
+    }
+    for (let i = 0; i < 256; i++) {
+      try {
+        const response = await timeout(
+          25,
+          fetch(`http://${networkId}.${i}:3030/host`)
+        );
+        const host = await response.json();
+        console.log(host);
+        setHosts([...hosts, host]);
+        setIsLoading(false);
+      } catch (err) {}
+    }
+    setIsLoading(false);
+  };
+  
   useEffect(() => {
     setIsLoading(true);
-    detectHosts().then(() => setIsLoading(false));
+    detectHosts();
   }, [detectHosts]);
 
   const detectHosts = useCallback(async () => {
     setIsRefreshing(true);
-    try {
-      const res = await getHosts();
-      setHosts(res);
-      setIsRefreshing(false);
-    } catch (err) {
-      console.log(err.message);
-    }
+    await getHosts();
     setIsRefreshing(false);
   }, [setIsLoading]);
 
-  useEffect(() => {
-    const willFocusSub = props.navigation.addListener('willFocus', detectHosts);
-    return () => {
-      willFocusSub.remove();
-    };
-  }, [detectHosts]);
+  // useEffect(() => {
+  //   const willFocusSub = props.navigation.addListener('willFocus', detectHosts);
+  //   return () => {
+  //     willFocusSub.remove();
+  //   };
+  // }, [detectHosts]);
 
   const selectHostHandler = ip => {
     props.navigation.navigate('Main', {

@@ -45,7 +45,7 @@ const MainScreen = props => {
 
   const startTimerHandler = async () => {
     const miliseconds = time.getHours() * 3600000 + time.getMinutes() * 60000;
-    const res = await fetch(`http://${selectedIp}:3000/execute`, {
+    const res = await fetch(`http://${selectedIp}:3030/execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ const MainScreen = props => {
   };
 
   const stopTimerHandler = async () => {
-    const res = await fetch(`http://${selectedIp}:3000/cancel`);
+    const res = await fetch(`http://${selectedIp}:3030/cancel`);
     if ((await res.status) === 200) {
       toast.show('The timer has stopped');
       setStarted(false);
