@@ -12,8 +12,8 @@ var jsonParser = bodyParser.json();
 
 var timer;
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
+app.listen(3030, () => {
+  console.log('Server running on port 3030');
 });
 
 app.get('/host', (req, res, next) => {
@@ -58,7 +58,7 @@ const getIp = () => {
     if (stop) return;
     ifaces[ifname].forEach(iface => {
       if ('IPv4' !== iface.family || iface.internal !== false) return;
-      if (iface.address.includes('192.168.1.')) {
+      if (iface.address.includes('192.168.1.') || iface.address.includes('10.0.0.')) {
         ip = iface.address;
         stop = true;
         return;
