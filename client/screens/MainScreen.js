@@ -7,10 +7,11 @@ import {
   TextInput,
   Dimensions,
   TouchableOpacity,
+  ToastAndroid,
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import RadioForm from 'react-native-simple-radio-button';
-import Toast from 'react-native-easy-toast';
+import RNFS from 'react-native-fs';
 
 import Card from '../components/Card';
 import Colors from '../constants/Color';
@@ -21,13 +22,16 @@ const radio_props = [
   { label: 'Sleep', value: 2 },
 ];
 
+const convertToMiliseconds = (time) => {
+  return time.getHours() * 3600000 + time.getMinutes() * 60000;
+};
+
 const MainScreen = props => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [time, setTime] = useState(new Date(2000, 12, 12, 0, 0, 0));
   const [selectedIp, setSelectedIp] = useState(props.route.params.selectedIp);
   const [mode, setMode] = useState(0);
   const [started, setStarted] = useState();
-  const [toast, setToast] = useState();
 
   const showTimePicker = () => {
     setDatePickerVisibility(true);
@@ -44,7 +48,7 @@ const MainScreen = props => {
   };
 
   const startTimerHandler = async () => {
-    const miliseconds = time.getHours() * 3600000 + time.getMinutes() * 60000;
+    const miliseconds = convertToMiliseconds(time);
     const res = await fetch(`http://${selectedIp}:3030/execute`, {
       method: 'POST',
       headers: {
@@ -57,20 +61,32 @@ const MainScreen = props => {
     });
     if ((await res.status) === 200) {
       setStarted(true);
-      toast.show('The timer has started');
+      ToastAndroid.show('The timer has started', ToastAndroid.SHORT);
     } else {
-      toast.show('Could not start the timer');
+      ToastAndroid.show('Could not start the timer', ToastAndroid.SHORT);
     }
   };
 
   const stopTimerHandler = async () => {
     const res = await fetch(`http://${selectedIp}:3030/cancel`);
     if ((await res.status) === 200) {
-      toast.show('The timer has stopped');
+      ToastAndroid.show('The timer has stopped', ToastAndroid.SHORT);
       setStarted(false);
     } else {
-      toast.show('Could not stop the timer');
+      ToastAndroid.show('Could not stop the timer', ToastAndroid.SHORT);
     }
+  };
+
+  const saveForQuickTileHandler = () => {
+    RNFS.writeFile(RNFS.DocumentDirectoryPath + '/quickTile.conf', 
+      JSON.stringify({
+        ipAddress: selectedIp, 
+        data: {
+          time: convertToMiliseconds(time), 
+          mode: mode
+        }
+      })
+    ).then((success) => ToastAndroid.show('Saved for quick tile', ToastAndroid.SHORT));
   };
 
   return (
@@ -114,12 +130,13 @@ const MainScreen = props => {
           color={Colors.primary}
           onPress={started ? stopTimerHandler : startTimerHandler}
         />
+        <View style={{paddingTop: 10}}>
+          <Button
+            title={"Save for quick Tile"}
+            color={Colors.primary}
+            onPress={saveForQuickTileHandler} />
+        </View>
       </Card>
-      <Toast
-        ref={component => setToast(component)}
-        position='bottom'
-        positionValue={200}
-      />
     </View>
   );
 };
@@ -135,7 +152,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: Dimensions.get('window').width - Dimensions.get('window').width / 4,
-    height: Dimensions.get('window').height / 3,
+    height: Dimensions.get('window').height / 2,
   },
   ipText: {
     fontWeight: 'bold',

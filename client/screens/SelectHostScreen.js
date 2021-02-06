@@ -8,13 +8,11 @@ import {
   Button,
   RefreshControl,
   ScrollView,
+  TouchableNativeFeedback
 } from 'react-native';
 import Card from '../components/Card';
 import NetInfo, { NetInfoStateType } from "@react-native-community/netinfo";
-import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import Color from '../constants/Color';
-import { State } from 'react-native-gesture-handler';
-import { interpolate, sub } from 'react-native-reanimated';
 
 
 const timeout = (ms, promise) => {
@@ -58,7 +56,7 @@ const SelectHostScreen = props => {
     for (let i = 0; i < 256; i++) {
       try {
         const response = await timeout(
-          25,
+          100,
           fetch(`http://${networkId}.${i}:3030/host`)
         );
         const host = await response.json();
@@ -68,6 +66,7 @@ const SelectHostScreen = props => {
       } catch (err) {}
     }
     setIsLoading(false);
+    setIsRefreshing(false);
   };
   
   useEffect(() => {
@@ -78,15 +77,7 @@ const SelectHostScreen = props => {
   const detectHosts = useCallback(async () => {
     setIsRefreshing(true);
     await getHosts();
-    setIsRefreshing(false);
   }, [setIsLoading]);
-
-  // useEffect(() => {
-  //   const willFocusSub = props.navigation.addListener('willFocus', detectHosts);
-  //   return () => {
-  //     willFocusSub.remove();
-  //   };
-  // }, [detectHosts]);
 
   const selectHostHandler = ip => {
     props.navigation.navigate('Main', {
@@ -111,7 +102,7 @@ const SelectHostScreen = props => {
           <RefreshControl
             colors={[Color.accent]}
             refreshing={isRefreshing}
-            onRefresh={detectHosts}
+            onRefresh={() => {setHosts([]); detectHosts()}}
           />
         }>
         <View style={styles.centered}>
