@@ -1,0 +1,6 @@
+daemon/remoteshutdown.err.log
+daemon/remoteshutdown.exe
+daemon/remoteshutdown.exe.config
+daemon/remoteshutdown.out.log
+daemon/remoteshutdown.wrapper.log
+daemon/remoteshutdown.xml
